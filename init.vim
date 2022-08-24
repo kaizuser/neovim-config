@@ -12,11 +12,10 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'kyazdani42/nvim-web-devicons'
 
 " Syntax
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'HerringtonDarkholme/yats.vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'vim-syntastic/syntastic'
-Plug 'valloric/youcompleteme'
-Plug 'Valloric/MatchTagAlways'
 Plug 'alvan/vim-closetag'
 Plug 'yuezk/vim-js'
 
@@ -87,31 +86,40 @@ let g:syntastic_quiet_messages={'type':'warning'}
 let g:syntastic_quiet_messages={'!level':'errors'}
 
 " SYNTAX ------------------------------------------------------------------
-" MatchTagAlways
-let g:mta_filetypes = {
-    \ 'html' : 1,
-    \ 'xhtml' : 1,
-    \ 'xml' : 1,
-    \ 'jinja' : 1,
-    \ 'javascriptreact' : 1,
-    \ 'typescriptreact' : 1,
-    \ 'jsx' : 1,
-    \ 'tsx' : 1,
-    \ 'javascript' : 1,
-    \ 'typescript' : 1}
-
 " Vim-closetag
-
 
 let g:closetag_filenames = '*.html, *.xhtml, *.phtml, *.jsx, *.tsx, *.js, *.ts'
 let g:closetag_xhtml_filenames = '*.xhtml, *.jsx, *.tsx, *.js, *.ts'
 let g:closetag_filetypes = 'html, xhtml ,phtml, jsx, tsx, js, ts, typescriptreact, javascriptreact'
 let g:closetag_xhtml_filetypes = 'xhtml,jsx,tsx,js,ts'
-
-" integer value [0|1]
-" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
-"
 let g:closetag_emptyTags_caseSensitive = 1
+
+" coc
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1):
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+
 
 
 
